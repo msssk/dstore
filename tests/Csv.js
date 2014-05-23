@@ -1,20 +1,17 @@
 define([
 	'intern!object',
 	'intern/chai!assert',
-	'dojo/request',
-	'dojo/promise/all',
 	'dojo/_base/declare',
 	'dstore/Csv',
 	'dstore/Memory',
 	'dojo/text!./data/noquote.csv',
 	'dojo/text!./data/quote.csv',
-	'dojo/text!./data/contributors.csv',
-],
-		function (registerSuite, assert, request, all, declare, Csv, Memory, noquote, quote, contributors) {
+	'dojo/text!./data/contributors.csv'
+], function (registerSuite, assert, declare, Csv, Memory, noquote, quote, contributors) {
 	var CsvMemory = declare([Memory, Csv]);
 	var xhrBase = require.toUrl('dstore/tests/data');
 	var csvs = {}; // holds retrieved raw CSV data
-	var stores = window.stores = {}; // holds stores created after CSV data is retrieved
+	var stores = {}; // holds stores created after CSV data is retrieved
 	csvs.noQuote = noquote;
 	stores.noQuoteNoHeader = new CsvMemory({
 		data: noquote,

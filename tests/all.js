@@ -9,7 +9,7 @@ define([
 	'intern/node_modules/dojo/has!host-browser?./RequestMemory',
 	'./Observable',
 	'./Cache',
-	'intern/node_modules/dojo/has!host-browser?./Csv',
+	'./Csv',
 	'./extensions/rqlQueryEngine',
 	'./validating',
 	'./extensions/validating-jsonSchema',
