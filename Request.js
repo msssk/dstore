@@ -260,7 +260,7 @@ define([
 				} else if (this[renderMethod]) {
 					push.apply(queryParams, this[renderMethod].apply(this, entry.normalizedArguments));
 				} else {
-					console.warn('Unable to render query params for "' + type + '" query', entry);
+					this.logger.warn('Unable to render query params for "' + type + '" query', entry);
 				}
 			}, this);
 

@@ -5,10 +5,11 @@ define([
 	'dojo/has',
 	'dojo/when',
 	'dojo/_base/declare',
+	'./ConsoleLogger',
 	'./QueryMethod',
 	'./Filter',
 	'dojo/Evented'
-], function (lang, arrayUtil, aspect, has, when, declare, QueryMethod, Filter, Evented) {
+], function (lang, arrayUtil, aspect, has, when, declare, ConsoleLogger, QueryMethod, Filter, Evented) {
 
 	// module:
 	//		dstore/Store
@@ -81,6 +82,11 @@ define([
 		//		Indicates the property to use as the identity property. The values of this
 		//		property should be unique.
 		idProperty: 'id',
+
+		// logger: Console instance
+		//		A logger instance that conforms to the console API.
+		//		Default: ConsoleLogger.js, which uses the `console` global
+		logger: ConsoleLogger,
 
 		// queryAccessors: Boolean
 		//		Indicates if client-side query engine filtering should (if the store property is true)

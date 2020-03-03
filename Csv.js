@@ -6,45 +6,45 @@ define([
 	var quoteRx = /^\s*"([\S\s]*)"\s*$/,
 		doubleQuoteRx = /""/g,
 		singleQuoteRx = /"/g;
-	
+
 	function arrays2hash(keys, values) {
 		// Takes 2 arrays and builds a hash where the keys are from the first array,
 		// and the values are from the second.
 		var obj = {},
 			len = keys.length,
 			i;
-		
+
 		for (i = 0; i < len; i++) {
 			obj[keys[i]] = values[i];
 		}
 		return obj;
 	}
-	
+
 	return declare(null, {
 		// summary:
 		//		A store mixin for supporting CSV format.
-		
+
 		// fieldNames: Array?
 		//		If specified, indicates names of fields in the order they appear in
 		//		CSV records.  If unspecified, the first line of the CSV will be treated
 		//		as a header row, and field names will be populated from there.
 		fieldNames: null,
-		
+
 		// delimiter: String
 		//		Delimiter between fields; default is a comma.
 		delimiter: ',',
-		
+
 		// newline: String
 		//		Character sequence to consider a newline.
 		//		Defaults to '\r\n' (CRLF) as per RFC 4180.
 		newline: '\r\n',
-		
+
 		// trim: Boolean
 		//		If true, leading/trailing space will be trimmed from any unquoted values.
 		trim: false,
-		
+
 		parse: function (str) {
-			// handles the parsing of the incoming data as CSV.			
+			// handles the parsing of the incoming data as CSV.
 
 			var data = [],
 				lines = str.split(this.newline),
@@ -55,27 +55,27 @@ define([
 				prefix = '', // used to re-add delimiters and newlines to a spanning value
 				parts, part, numlines, numparts, match,
 				i, j, k;
-			
+
 			// Outer loop iterates over lines.  It's labeled so that inner loop
 			// can jump out if an invalid value is encountered.
 			lineloop:
 			for (i = 0, numlines = lines.length; i < numlines; i++) {
 				if (!lang.trim(lines[i])) { continue; } // ignore blank lines
 				parts = lines[i].split(this.delimiter);
-				
+
 				// Inner loop iterates over "parts" (pieces of the line, split by
 				// the configured delimiter).
 				for (j = 0, numparts = parts.length; j < numparts; j++) {
 					part = parts[j];
 					k = -1;
-					
+
 					// Apply any leftovers in prefix before the next part, then clear it.
 					value += prefix + part;
 					prefix = '';
-					
+
 					// Count number of quotes in part to see whether we have a matching set.
 					while ((k = part.indexOf('"', k + 1)) >= 0) { numquotes++; }
-					
+
 					if (numquotes % 2 === 0) {
 						// Even number of quotes: we're done with this value.
 						if (numquotes > 0) {
@@ -87,7 +87,7 @@ define([
 								// If the completed value didn't match the RegExp, it's invalid
 								// (e.g. quotes were inside the value but not surrounding it).
 								// Jump out of the outer loop and start fresh on the next line.
-								console.warn('Csv: discarding row with invalid value: ' + value);
+								this.logger.warn('Csv: discarding row with invalid value: ' + value);
 								values = [];
 								value = '';
 								numquotes = 0;
@@ -107,7 +107,7 @@ define([
 						prefix = this.delimiter;
 					}
 				} // End of inner loop (delimited parts)
-				
+
 				if (numquotes === 0) {
 					// Line ended cleanly, push values and reset.
 					if (!fieldNames) {
@@ -124,7 +124,7 @@ define([
 					prefix = this.newline;
 				}
 			} // End of outer loop (lines)
-			
+
 			// The data is assembled; return
 			return data;
 		},
@@ -142,16 +142,16 @@ define([
 			//			if false, values will be quoted only if they need to be.
 			//		* trailingNewline: if true, a newline will be included at the end
 			//			of the string (after the last record).  Default is false.
-			
+
 			options = options || {};
-			
+
 			var alwaysQuote = options.alwaysQuote,
 				fieldNames = this.fieldNames,
 				delimiter = this.delimiter,
 				newline = this.newline,
 				output = '',
 				i, j, value, needsQuotes;
-			
+
 			// Process header row first (-1 case), then all data rows.
 			for (i = -1; i < data.length; i++) {
 				if (i > -1) { output += newline; }
@@ -169,9 +169,9 @@ define([
 						(needsQuotes ? '"' + value.replace(singleQuoteRx, '""') + '"' : value);
 				}
 			}
-			
+
 			if (options.trailingNewline) { output += newline; }
-			
+
 			return output;
 		}
 	});

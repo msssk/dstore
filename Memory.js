@@ -113,7 +113,7 @@ define([
 				if (destination !== undefined) {
 					event.beforeId = beforeId;
 				} else {
-					console.error('options.beforeId was specified but no corresponding index was found');
+					this.logger.error('options.beforeId was specified but no corresponding index was found');
 					destination = defaultDestination;
 				}
 			} else {

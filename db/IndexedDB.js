@@ -184,7 +184,7 @@ define([
 		_getTransaction: function () {
 			if (!this._currentTransaction) {
 				if (!this.db) {
-					console.error('The database has not been initialized yet');
+					this.logger.error('The database has not been initialized yet');
 				}
 				this._currentTransaction = this.db.transaction([this.storeName], 'readwrite');
 				var store = this;
@@ -193,7 +193,7 @@ define([
 					store._currentTransaction = null;
 				};
 				this._currentTransaction.onerror = function (error) {
-					console.error(error);
+					this.logger.error(error);
 				};
 			}
 			return this._currentTransaction;
@@ -434,6 +434,7 @@ define([
 			});
 		},
 		_normalizeQuery: function () {
+			var logger = this.logger;
 			// normalize the operators to a single query object
 			var filter;
 			var union;
@@ -478,7 +479,7 @@ define([
 							value.data = fetched;
 							processFilterArg(entry);
 						}, function (error) {
-							console.error('Failed to retrieved nested collection', error);
+							logger.error('Failed to retrieved nested collection', error);
 						}));
 						return;
 					}

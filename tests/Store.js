@@ -1,10 +1,11 @@
 define([
+	'./util/consoleMock',
 	'../Store',
 	'dojo/_base/declare',
 	'dojo/_base/lang',
 	'intern!object',
 	'intern/chai!assert'
-], function (Store, declare, lang, registerSuite, assert) {
+], function (consoleMock, Store, declare, lang, registerSuite, assert) {
 
 	var Model = declare(null, {
 		constructor: function (args) {
@@ -228,6 +229,64 @@ define([
 
 			var store = new Store({ Model: TestModel });
 			assert.strictEqual(store.Model, TestModel);
+		},
+
+		logging: {
+			'default logging uses console global': function () {
+				var errorMessage = 'error message';
+				var logMessage = 'log message';
+				var warnMessage = 'warn message';
+				var store = new Store();
+
+				try {
+					store.logger.error(errorMessage);
+					assert.strictEqual(consoleMock.errors.pop(), errorMessage);
+
+					store.logger.log(logMessage);
+					assert.strictEqual(consoleMock.logs.pop(), logMessage);
+
+					store.logger.warn(warnMessage);
+					assert.strictEqual(consoleMock.warns.pop(), warnMessage);
+				}
+				finally {
+					consoleMock.restore();
+				}
+			},
+
+			'custom logger is used': function () {
+				var errorMessage = 'error message';
+				var logMessage = 'log message';
+				var warnMessage = 'warn message';
+				var logger = {
+					errors: [],
+					logs: [],
+					warns: [],
+
+					error: function (message) {
+						this.errors.push(message);
+					},
+
+					log: function (message) {
+						this.logs.push(message);
+					},
+
+					warn: function (message) {
+						this.warns.push(message);
+					}
+				};
+				var store = new Store({
+					logger: logger
+				});
+
+				store.logger.error(errorMessage);
+				assert.strictEqual(logger.errors.pop(), errorMessage);
+
+				store.logger.log(logMessage);
+				assert.strictEqual(logger.logs.pop(), logMessage);
+
+				store.logger.warn(warnMessage);
+				assert.strictEqual(logger.warns.pop(), warnMessage);
+		}
 		}
 	});
 });
